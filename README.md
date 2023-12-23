@@ -4,6 +4,6 @@ Repositorio para alojar el código que se usará en los tutoriales de unity desd
 # Assets de Itch.io:
 
 #### Player -> https://rvros.itch.io/animated-pixel-hero
-#### Tileset -> https://ansimuz.itch.io/magic-cliffs-environment
+#### Tileset -> https://aamatniekss.itch.io/free-pixelart-platformer-tileset
 #### Enemies -> https://luizmelo.itch.io/monsters-creatures-fantasy
 #### Torret enemy -> https://astrobob.itch.io/arcane-archer
