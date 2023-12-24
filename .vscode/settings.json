@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "UnityDesde0Platformer2D.sln"
+    "dotnet.defaultSolution": "UnityDesde0-Platformer2D.sln"
 }
