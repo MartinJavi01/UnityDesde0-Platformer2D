@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float heightDiff;
 
-    public void Update() {
+    public void FixedUpdate() {
         Vector3 currentPos = transform.position;
         currentPos.x = Mathf.Lerp(currentPos.x, target.position.x, GlobalVariables.CAMERA_SMOTHNESS);
         currentPos.y = Mathf.Lerp(currentPos.y, target.position.y + heightDiff, GlobalVariables.CAMERA_SMOTHNESS);
