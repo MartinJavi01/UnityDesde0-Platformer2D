@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     private static float TIME_BETWEEN_ACTIONS = 0.3f;
     private static float DASH_TIME = 0.3f;
+    private static float JUMP_TIME = 0.3f;
 
     [Header("Movement")]
     [SerializeField]
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private bool dashing;
     private bool canDash;
     private bool canDoAction;
+    private float jumpTimer;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -36,6 +38,8 @@ public class PlayerController : MonoBehaviour
         dashing = false;
         canDash = true;
         canDoAction = true;
+
+        jumpTimer = JUMP_TIME;
     }
 
     public void Update() {
@@ -55,21 +59,33 @@ public class PlayerController : MonoBehaviour
 
         onGround = Physics2D.OverlapCircle(groundDetector.position, 0.1f, groundMask);
         if(onGround) {
+            jumpTimer = JUMP_TIME;
             canDash = true;
             if(Input.GetKey(KeyCode.Space)) {
             moveDir.y = jumpForce;
             onGround = false;
+            }
+        } else {
+            moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
+            if(rb.velocity.y < 0) {
+                if (jumpTimer > 0) jumpTimer = 0;
+            } else {
+                if(Input.GetKey(KeyCode.Space) && jumpTimer > 0) {
+                    moveDir.y = jumpForce;
+                    jumpTimer -= Time.deltaTime;
+                }
+                if(Input.GetKeyUp(KeyCode.Space)) {
+                    jumpTimer = 0;
+                    moveDir.y = 0;
+                }
+            }
         }
 
-        }
-        if(!onGround) {
-            moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
-        }
         moveDir.x = xAxis * moveSpeed;
         rb.velocity = moveDir;
-    }
+        }
 
-    private void CheckDash() {
+        private void CheckDash() {
         if(dashing) {
             rb.velocity = new Vector2(transform.localScale.x * (moveSpeed * 2), 0);
         }
