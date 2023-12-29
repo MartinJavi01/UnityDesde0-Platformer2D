@@ -26,6 +26,7 @@ public class PlayerController : MonoBehaviour
     private bool dashing;
     private bool canDash;
     private bool canDoAction;
+    private bool canDoubleJump;
     private float jumpTimer;
 
     private Rigidbody2D rb;
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
         dashing = false;
         canDash = true;
         canDoAction = true;
+        canDoubleJump = false;
 
         jumpTimer = JUMP_TIME;
     }
@@ -61,14 +63,20 @@ public class PlayerController : MonoBehaviour
         if(onGround) {
             jumpTimer = JUMP_TIME;
             canDash = true;
+            canDoubleJump = false;
             if(Input.GetKey(KeyCode.Space)) {
-            moveDir.y = jumpForce;
-            onGround = false;
+                moveDir.y = jumpForce;
+                onGround = false;
+                canDoubleJump = true;
             }
         } else {
             moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
             if(rb.velocity.y < 0) {
-                if (jumpTimer > 0) jumpTimer = 0;
+                jumpTimer = 0;
+                if(Input.GetKey(KeyCode.Space) && canDoubleJump) {
+                    canDoubleJump = false;
+                    moveDir.y = jumpForce;
+                }
             } else {
                 if(Input.GetKey(KeyCode.Space) && jumpTimer > 0) {
                     moveDir.y = jumpForce;
