@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Transform wallDetector;
     [SerializeField]
+    private Transform ledgeDetector;
+    [SerializeField]
+    private Transform upperLedgeDetector;
+    [SerializeField]
     private LayerMask groundMask;
 
     private Vector2 moveDir;
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
     private bool onGround;
     private bool dashing;
     private bool wallSliding;
+    private bool grabedToLedge;
     private bool canDash;
     private bool canDoAction;
     private bool inputBlocked;
@@ -46,6 +51,7 @@ public class PlayerController : MonoBehaviour
         canDoAction = true;
         canDoubleJump = false;
         inputBlocked = false;
+        grabedToLedge = false;
 
         jumpTimer = JUMP_TIME;
     }
@@ -67,9 +73,9 @@ public class PlayerController : MonoBehaviour
         moveDir.x = xAxis * moveSpeed;
 
         CheckJump();
-        CheckWallSlide();
 
         rb.velocity = moveDir;
+        if(grabedToLedge) rb.velocity = new Vector2(rb.velocity.x, 0);
     }
 
     private void CheckJump() {
@@ -84,7 +90,7 @@ public class PlayerController : MonoBehaviour
                 canDoubleJump = true;
             }
         } else {
-            moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
+            if(!grabedToLedge) moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
             if(rb.velocity.y < 0) {
                 jumpTimer = 0;
                 if(Input.GetKeyDown(KeyCode.Space) && canDoubleJump) {
@@ -101,6 +107,8 @@ public class PlayerController : MonoBehaviour
                     moveDir.y = 0;
                 }
             }
+            CheckLedge();
+            CheckWallSlide();
         }
     }
 
@@ -110,7 +118,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask);
+        wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask) && !grabedToLedge;
         if(wallSliding) {
             moveDir.y = -GlobalVariables.GRAVITY / 2;
             if(Input.GetKey(KeyCode.Space)) {
@@ -121,6 +129,15 @@ public class PlayerController : MonoBehaviour
                 currentCo = CoBlockInput(0.15f);
                 StartCoroutine(currentCo);
             }
+        }
+    }
+
+    private void CheckLedge() {
+        grabedToLedge = Physics2D.OverlapCircle(ledgeDetector.position, 0.1f, groundMask) &&
+                            !Physics2D.OverlapCircle(upperLedgeDetector.position, 0.1f, groundMask);
+
+        if(grabedToLedge) {
+            //do jump logic
         }
     }
 
