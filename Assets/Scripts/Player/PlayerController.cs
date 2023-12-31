@@ -18,16 +18,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Transform groundDetector;
     [SerializeField]
+    private Transform wallDetector;
+    [SerializeField]
     private LayerMask groundMask;
 
     private Vector2 moveDir;
     private float xAxis;
     private bool onGround;
     private bool dashing;
+    private bool wallSliding;
     private bool canDash;
     private bool canDoAction;
+    private bool inputBlocked;
     private bool canDoubleJump;
     private float jumpTimer;
+    private IEnumerator currentCo;
 
     private Rigidbody2D rb;
     private Animator anim;
@@ -40,12 +45,13 @@ public class PlayerController : MonoBehaviour
         canDash = true;
         canDoAction = true;
         canDoubleJump = false;
+        inputBlocked = false;
 
         jumpTimer = JUMP_TIME;
     }
 
-    public void Update() {
-        UpdateMovement();
+    public void FixedUpdate() {
+        if(!inputBlocked) UpdateMovement();
         CheckDash();
         UpdateAnimations();
     }
@@ -58,13 +64,21 @@ public class PlayerController : MonoBehaviour
         if (xAxis != 0) {
             transform.localScale = new Vector3(xAxis, 1, 1);
         }
+        moveDir.x = xAxis * moveSpeed;
 
+        CheckJump();
+        CheckWallSlide();
+
+        rb.velocity = moveDir;
+    }
+
+    private void CheckJump() {
         onGround = Physics2D.OverlapCircle(groundDetector.position, 0.1f, groundMask);
         if(onGround) {
             jumpTimer = JUMP_TIME;
             canDash = true;
             canDoubleJump = false;
-            if(Input.GetKey(KeyCode.Space)) {
+            if(Input.GetKeyDown(KeyCode.Space)) {
                 moveDir.y = jumpForce;
                 onGround = false;
                 canDoubleJump = true;
@@ -73,7 +87,7 @@ public class PlayerController : MonoBehaviour
             moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
             if(rb.velocity.y < 0) {
                 jumpTimer = 0;
-                if(Input.GetKey(KeyCode.Space) && canDoubleJump) {
+                if(Input.GetKeyDown(KeyCode.Space) && canDoubleJump) {
                     canDoubleJump = false;
                     moveDir.y = jumpForce;
                 }
@@ -88,18 +102,36 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+    }
 
-        moveDir.x = xAxis * moveSpeed;
-        rb.velocity = moveDir;
+    private void CheckWallSlide() {
+        if(onGround) {
+            wallSliding = false;
+            return;
         }
 
-        private void CheckDash() {
+        wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask);
+        if(wallSliding) {
+            moveDir.y = -GlobalVariables.GRAVITY / 2;
+            if(Input.GetKey(KeyCode.Space)) {
+                jumpTimer = 0;
+                moveDir.y = jumpForce;
+                moveDir.x = -transform.localScale.x * moveSpeed / 1.5f;
+                wallSliding = false;
+                currentCo = CoBlockInput(0.15f);
+                StartCoroutine(currentCo);
+            }
+        }
+    }
+
+    private void CheckDash() {
         if(dashing) {
             rb.velocity = new Vector2(transform.localScale.x * (moveSpeed * 2), 0);
         }
 
-        if(!dashing && Input.GetKey(KeyCode.K) && canDoAction && canDash) {
-            StartCoroutine(CoDash());
+        if(!dashing && Input.GetKeyDown(KeyCode.K) && canDoAction && canDash) {
+            currentCo = CoDash();
+            StartCoroutine(currentCo);
         }
     }
 
@@ -109,7 +141,8 @@ public class PlayerController : MonoBehaviour
         canDoAction = false;
         yield return new WaitForSeconds(DASH_TIME);
         dashing = false;
-        StartCoroutine(CoActionTime());
+        currentCo = CoActionTime();
+        StartCoroutine(currentCo);
     }
 
     private IEnumerator CoActionTime() {
@@ -117,10 +150,17 @@ public class PlayerController : MonoBehaviour
         canDoAction = true;
     }
 
+    private IEnumerator CoBlockInput(float time) {
+        inputBlocked = true;
+        yield return new WaitForSeconds(time);
+        inputBlocked = false;
+    }
+
     private void UpdateAnimations() {
         anim.SetBool("moving", xAxis != 0);
         anim.SetBool("onGround", onGround);
         anim.SetFloat("yAxis", rb.velocity.y);
         anim.SetBool("dashing", dashing);
+        anim.SetBool("wallSliding", wallSliding);
     }
 }
