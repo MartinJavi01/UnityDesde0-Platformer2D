@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
         jumpTimer = JUMP_TIME;
     }
 
-    public void FixedUpdate() {
+    public void Update() {
         if(!inputBlocked) UpdateMovement();
         CheckDash();
         UpdateAnimations();
@@ -107,9 +107,9 @@ public class PlayerController : MonoBehaviour
                     moveDir.y = 0;
                 }
             }
-            CheckLedge();
-            CheckWallSlide();
         }
+        CheckLedge();
+        CheckWallSlide();
     }
 
     private void CheckWallSlide() {
@@ -118,10 +118,10 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask) && !grabedToLedge;
+        wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask) && !grabedToLedge && !onGround;
         if(wallSliding) {
             moveDir.y = -GlobalVariables.GRAVITY / 2;
-            if(Input.GetKey(KeyCode.Space)) {
+            if(Input.GetKeyDown(KeyCode.Space)) {
                 jumpTimer = 0;
                 moveDir.y = jumpForce;
                 moveDir.x = -transform.localScale.x * moveSpeed / 1.5f;
@@ -134,10 +134,17 @@ public class PlayerController : MonoBehaviour
 
     private void CheckLedge() {
         grabedToLedge = Physics2D.OverlapCircle(ledgeDetector.position, 0.1f, groundMask) &&
-                            !Physics2D.OverlapCircle(upperLedgeDetector.position, 0.1f, groundMask);
+                            !Physics2D.OverlapCircle(upperLedgeDetector.position, 0.1f, groundMask) && !onGround;
 
         if(grabedToLedge) {
-            //do jump logic
+            rb.gravityScale = 0;
+            if(Input.GetKeyDown(KeyCode.Space)) {
+                rb.gravityScale = 1;
+                moveDir.y = jumpForce * 2;
+                grabedToLedge = false;
+            }
+        } else {
+            rb.gravityScale = 1;
         }
     }
 
@@ -179,5 +186,6 @@ public class PlayerController : MonoBehaviour
         anim.SetFloat("yAxis", rb.velocity.y);
         anim.SetBool("dashing", dashing);
         anim.SetBool("wallSliding", wallSliding);
+        anim.SetBool("grabedToLedge", grabedToLedge);
     }
 }
