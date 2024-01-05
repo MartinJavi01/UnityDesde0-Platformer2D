@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     private static float TIME_BETWEEN_ACTIONS = 0.3f;
     private static float DASH_TIME = 0.3f;
     private static float JUMP_TIME = 0.3f;
+    private static float FLINCH_TIME = 0.5f;
 
     [Header("Movement")]
     [SerializeField]
@@ -88,6 +89,7 @@ public class PlayerController : MonoBehaviour
                 moveDir.y = jumpForce;
                 onGround = false;
             }
+            CheckAttack();
         } else {
             if(!grabedToLedge) moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
             if(rb.velocity.y < 0) {
@@ -156,6 +158,22 @@ public class PlayerController : MonoBehaviour
             currentCo = CoDash();
             StartCoroutine(currentCo);
         }
+    }
+
+    private void CheckAttack() {
+        if(Input.GetKeyDown(KeyCode.J)) {
+            moveDir.x = 0;
+            xAxis = 0;
+            anim.SetTrigger("attack");
+            currentCo = CoBlockInput(0.6f);
+            StartCoroutine(currentCo);
+        }
+    }
+
+    private void CoFlinch() {
+        currentCo = CoBlockInput(FLINCH_TIME);
+        //anim.setTrigger("flinch");
+        StartCoroutine(currentCo);
     }
 
     private IEnumerator CoDash() {
