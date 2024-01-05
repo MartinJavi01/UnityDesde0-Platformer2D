@@ -83,20 +83,15 @@ public class PlayerController : MonoBehaviour
         if(onGround) {
             jumpTimer = JUMP_TIME;
             canDash = true;
-            canDoubleJump = false;
+            canDoubleJump = true;
             if(Input.GetKeyDown(KeyCode.Space)) {
                 moveDir.y = jumpForce;
                 onGround = false;
-                canDoubleJump = true;
             }
         } else {
             if(!grabedToLedge) moveDir.y -= GlobalVariables.GRAVITY * Time.deltaTime;
             if(rb.velocity.y < 0) {
                 jumpTimer = 0;
-                if(Input.GetKeyDown(KeyCode.Space) && canDoubleJump) {
-                    canDoubleJump = false;
-                    moveDir.y = jumpForce;
-                }
             } else {
                 if(Input.GetKey(KeyCode.Space) && jumpTimer > 0) {
                     moveDir.y = jumpForce;
@@ -107,6 +102,10 @@ public class PlayerController : MonoBehaviour
                     moveDir.y = 0;
                 }
             }
+            if(Input.GetKeyDown(KeyCode.Space) && canDoubleJump) {
+                    canDoubleJump = false;
+                    moveDir.y = jumpForce;
+                }
         }
         CheckLedge();
         CheckWallSlide();
@@ -120,7 +119,7 @@ public class PlayerController : MonoBehaviour
 
         wallSliding = Physics2D.OverlapCircle(wallDetector.position, 0.1f, groundMask) && !grabedToLedge && !onGround;
         if(wallSliding) {
-            moveDir.y = -GlobalVariables.GRAVITY / 2;
+            moveDir.y = -GlobalVariables.GRAVITY / 3;
             if(Input.GetKeyDown(KeyCode.Space)) {
                 jumpTimer = 0;
                 moveDir.y = jumpForce;
