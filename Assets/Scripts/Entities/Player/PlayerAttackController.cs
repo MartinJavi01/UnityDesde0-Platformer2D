@@ -8,9 +8,9 @@ public class PlayerAttackController : MonoBehaviour
     private int attackValue;
 
     public void OnTriggerEnter2D(Collider2D col) {
-        if(col.CompareTag("Enemy")) {
-            col.GetComponent<EntityHealthController>()
-            .SubstractHealth(attackValue);
+        if(col.CompareTag("Enemy") && !col.isTrigger) {
+            col.GetComponent<BaseEnemyController>()
+            .HurtEnemy(attackValue, transform.position);
         }
     }
 }

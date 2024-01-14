@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private bool dashing;
     private bool wallSliding;
     private bool grabedToLedge;
+    private bool flinching;
     private bool canDash;
     private bool canDoAction;
     private bool inputBlocked;
@@ -42,10 +43,12 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
+    private EntityHealthController entityHealthController;
 
     public void Start() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        entityHealthController = GetComponent<EntityHealthController>();
 
         dashing = false;
         canDash = true;
@@ -53,6 +56,7 @@ public class PlayerController : MonoBehaviour
         canDoubleJump = false;
         inputBlocked = false;
         grabedToLedge = false;
+        flinching = false;
 
         jumpTimer = JUMP_TIME;
     }
@@ -170,12 +174,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void CoFlinch() {
-        currentCo = CoBlockInput(FLINCH_TIME);
-        //anim.setTrigger("flinch");
-        StartCoroutine(currentCo);
-    }
-
     private IEnumerator CoDash() {
         dashing = true;
         canDash = false;
@@ -195,6 +193,7 @@ public class PlayerController : MonoBehaviour
         inputBlocked = true;
         yield return new WaitForSeconds(time);
         inputBlocked = false;
+        flinching = false;
     }
 
     private void UpdateAnimations() {
@@ -204,5 +203,18 @@ public class PlayerController : MonoBehaviour
         anim.SetBool("dashing", dashing);
         anim.SetBool("wallSliding", wallSliding);
         anim.SetBool("grabedToLedge", grabedToLedge);
+    }
+
+    public void HurtPlayer(int damage, Vector2 damagePos) {
+        if(flinching) return;
+        else flinching = true;
+        float flinchDir = (damagePos.x - transform.position.x) < 0 ? 1 : -1;
+
+        entityHealthController.SubstractHealth(damage);
+        currentCo = CoBlockInput(FLINCH_TIME);
+        anim.SetTrigger("flinch");
+        rb.velocity = new Vector2(flinchDir * moveSpeed, 2);
+        
+        StartCoroutine(currentCo);
     }
 }
