@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class BaseEnemyController : MonoBehaviour
 {
-    private Rigidbody2D rb;
-    private EntityHealthController entityHealthController;
-    private Animator anim;
+    protected Rigidbody2D rb;
+    protected EntityHealthController entityHealthController;
+    protected Animator anim;
 
-    private bool flinching;
+    protected bool flinching;
 
     [Header("Protected fields")]
     public float defaultLookDir;

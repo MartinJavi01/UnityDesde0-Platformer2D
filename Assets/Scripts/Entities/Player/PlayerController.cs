@@ -213,7 +213,7 @@ public class PlayerController : MonoBehaviour
         entityHealthController.SubstractHealth(damage);
         currentCo = CoBlockInput(FLINCH_TIME);
         anim.SetTrigger("flinch");
-        rb.velocity = new Vector2(flinchDir * moveSpeed, 2);
+        rb.velocity = new Vector2(flinchDir * moveSpeed / 1.5f, 2);
         
         StartCoroutine(currentCo);
     }

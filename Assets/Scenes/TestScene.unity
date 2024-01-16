@@ -1998,6 +1998,7 @@ GameObject:
   - component: {fileID: 762383725}
   - component: {fileID: 762383724}
   - component: {fileID: 762383726}
+  - component: {fileID: 762383727}
   m_Layer: 0
   m_Name: Bandit
   m_TagString: Enemy
@@ -2069,7 +2070,8 @@ Transform:
   m_LocalPosition: {x: -22.53, y: -0.19, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1390538781}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &762383721
@@ -2185,10 +2187,68 @@ MonoBehaviour:
   death_time: 2
   moveSpeed: 3
   detectionRange: 10
-  groundDetector: {fileID: 0}
+  groundDetector: {fileID: 1390538781}
   groundMask:
     serializedVersion: 2
     m_Bits: 64
+  attackTime: 1
+  attackDamage: 2
+  attackDistance: 1
+--- !u!60 &762383727
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 762383718}
+  m_Enabled: 0
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 3, y: 3}
+    newSize: {x: 3, y: 3}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.40554237, y: 0.65049237}
+      - {x: -0.05856514, y: 1.3421228}
+      - {x: -0.8929062, y: 1.1124402}
+      - {x: -1.4550323, y: 0.7502238}
+      - {x: -1.5802555, y: 0.06732476}
+      - {x: -0.69381714, y: -0.41379833}
+      - {x: -0.47992897, y: -0.41379833}
+      - {x: -0.3607235, y: -0.42471647}
+      - {x: -0.373209, y: -0.15598884}
+      - {x: -0.36087227, y: 0.018951476}
+  m_UseDelaunayMesh: 0
 --- !u!1 &848128817
 GameObject:
   m_ObjectHideFlags: 0
@@ -12180,6 +12240,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1390538780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1390538781}
+  m_Layer: 0
+  m_Name: Ground detector
+  m_TagString: Untagged
+  m_Icon: {fileID: 7866945982896999795, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1390538781
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1390538780}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.068, y: -1.355, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 762383720}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1462623558
 GameObject:
   m_ObjectHideFlags: 0
