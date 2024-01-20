@@ -43,12 +43,12 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator anim;
-    private EntityHealthController entityHealthController;
+    private PlayerHealthController playerHealthController;
 
     public void Start() {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        entityHealthController = GetComponent<EntityHealthController>();
+        playerHealthController = GetComponent<PlayerHealthController>();
 
         dashing = false;
         canDash = true;
@@ -210,7 +210,7 @@ public class PlayerController : MonoBehaviour
         else flinching = true;
         float flinchDir = (damagePos.x - transform.position.x) < 0 ? 1 : -1;
 
-        entityHealthController.SubstractHealth(damage);
+        playerHealthController.SubstractHealth(damage);
         currentCo = CoBlockInput(FLINCH_TIME);
         anim.SetTrigger("flinch");
         rb.velocity = new Vector2(flinchDir * moveSpeed / 1.5f, 2);

@@ -7,6 +7,7 @@ public class EntityHealthController : MonoBehaviour
 {
     [SerializeField]
     private int maxHealth;
+    
     private int currentHealth;
 
     private void Start() {
