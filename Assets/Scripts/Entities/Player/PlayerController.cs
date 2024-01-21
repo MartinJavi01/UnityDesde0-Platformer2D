@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class PlayerController : MonoBehaviour
     private static float DASH_TIME = 0.3f;
     private static float JUMP_TIME = 0.3f;
     private static float FLINCH_TIME = 0.5f;
+    private static float DEATH_TIME = 1.7f;
 
     [Header("Movement")]
     [SerializeField]
@@ -69,6 +71,10 @@ public class PlayerController : MonoBehaviour
 
     private void UpdateMovement() {
         if(dashing) return;
+
+        if(Input.GetKey(KeyCode.Escape)) {
+            SceneManager.LoadScene("TitleScene");
+        }
 
         moveDir = rb.velocity;
         xAxis = Input.GetAxisRaw("Horizontal");
@@ -196,6 +202,14 @@ public class PlayerController : MonoBehaviour
         flinching = false;
     }
 
+    private IEnumerator CoDeath() {
+        anim.SetTrigger("death");
+        rb.velocity = new Vector2(0, rb.velocity.y);
+        yield return new WaitForSeconds(DEATH_TIME);
+        playerHealthController.setCurrentHealth(GlobalVariables.MAX_PLAYER_HEALTH);
+        SceneManager.LoadScene("TitleScene");
+    }
+
     private void UpdateAnimations() {
         anim.SetBool("moving", xAxis != 0);
         anim.SetBool("onGround", onGround);
@@ -211,10 +225,14 @@ public class PlayerController : MonoBehaviour
         float flinchDir = (damagePos.x - transform.position.x) < 0 ? 1 : -1;
 
         playerHealthController.SubstractHealth(damage);
-        currentCo = CoBlockInput(FLINCH_TIME);
-        anim.SetTrigger("flinch");
-        rb.velocity = new Vector2(flinchDir * moveSpeed / 1.5f, 2);
-        
-        StartCoroutine(currentCo);
+
+        if(GlobalVariables.CURRENT_PLAYER_HEALTH == 0) {
+            StartCoroutine(CoDeath());
+        } else {
+            currentCo = CoBlockInput(FLINCH_TIME);
+            anim.SetTrigger("flinch");
+            rb.velocity = new Vector2(flinchDir * moveSpeed / 1.5f, 2);
+            StartCoroutine(currentCo);
+        }
     }
 }
